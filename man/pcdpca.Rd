@@ -2,18 +2,37 @@
 % Please edit documentation in R/pcdpca.R
 \name{pcdpca}
 \alias{pcdpca}
-\title{Compute periodically correlated DPCA filters and scores}
+\title{Compute periodically correlacted DPCA filter coefficients}
 \usage{
-pcdpca(X)
+pcdpca(X, V = NULL, lags = -10:10, q = NULL, weights = NULL,
+  freq = NULL, T = 2)
 }
 \arguments{
-\item{X}{multivariate time series}
+\item{X}{multivariate stationary time series}
+
+\item{V}{correlation structure between coefficients of vectors (default diagonal)}
+
+\item{lags}{requested filter coefficients}
+
+\item{q}{window for spectral density estimation as in \code{\link{spectral.density}}}
+
+\item{weights}{as in \code{\link{spectral.density}}}
+
+\item{freq}{frequency grid to estimate on as in \code{\link{spectral.density}}}
+}
+\value{
+principal components series
 }
 \description{
-Compute periodically correlated DPCA filters and scores
+For a given periodically correlated multivariate process \code{X} eigendecompose it's spectral density
+and use an inverse fourier transform to get coefficients of the optimal filters.
 }
-\examples{
-pcdpca(X)
+\references{
+Kidzinski, Kokoszka, Jouzdani
+Dynamic principal components of periodically correlated functional time series
+Research report, 2016
 }
-\keyword{pcdpca}
+\seealso{
+\code{\link{dpca.inverse}}, \code{\link{dpca.scores}}
+}
 
