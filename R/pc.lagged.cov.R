@@ -14,7 +14,7 @@
 #' X = rar(100)
 #' Y = rar(100)
 #' pc.lagged.cov(X,Y)
-pc.lagged.cov = function(X,Y,lag,d,T)
+pc.lagged.cov = function(X,Y,lag,j1,j2,T)
 {
   if (is.null(Y))
 		Y = X
@@ -30,19 +30,23 @@ pc.lagged.cov = function(X,Y,lag,d,T)
   if (n - 1 <= h)
 	  stop(paste("Too little observations to compute lagged covariance with lag",h))
 
-	idxX = 1:(n-h)
-	idxY = 1:(n-h)+h
+	# idxX = 1:(n-h)
+	# idxY = 1:(n-h)+h
 
-	subidx = T*(0:n) + d + 1
-	subidx = subidx[subidx <= n-h]
-	subidx = subidx[subidx >= 0]
-	idxX = idxX[subidx]
-	idxY = idxY[subidx]
+	idY = T*(0:n) + j2 + 1 + h
+	idY = idY[idY <= n]
+#	print(idY)
+	nr = length(idY)
 
-  M = t(X[idxX,]) %*% (Y[idxY,])/(n)
+	idX = T*(0:n) + j1 + 1
+	idX = idX[1:nr]
+#	print(idX)
+
+
+  M = t(X[idX,]) %*% (Y[idY,])/(nr)
 
 	if (lag < 0){
-	  M = t(Y[idxX,]) %*% (X[idxY,])/(n)
+	  M = t(Y[idX,]) %*% (X[idY,])/(nr)
 	  M = t(M)
 	}
 	M

@@ -14,7 +14,7 @@
 #' X = rar(100)
 #' Y = rar(100)
 #' pc.cov.structure(X,Y,3,0,3)
-pc.cov.structure = function(X,Y,q,d,T){
+pc.cov.structure = function(X,Y,q,j1,j2,T){
   if (is.null(Y))
     Y = X
 
@@ -30,7 +30,7 @@ pc.cov.structure = function(X,Y,q,d,T){
   Ch = array(0,c(2*q+1,nbasisX,nbasisY))
 
   for (h in (-q):q)
-    Ch[h+q+1,,] = pc.lagged.cov(X,Y,h,d,T)
+    Ch[h+q+1,,] = pc.lagged.cov(X,Y,h,j1,j2,T)
   Ch
 
   timedom(Ch,-q:q)

@@ -31,8 +31,6 @@ spectral.density = function(X,Y=NULL,V=NULL,freq=NULL,q=NULL,weights=NULL,Ch=NUL
     Y = X
   if (is.null(q))
     q = 10
-  if (is.null(V))
-    V = diag(dim(X)[2])
 
   if (!is.matrix(X) || !is.matrix(Y))
     stop("X and Y must be matrices")
@@ -43,13 +41,23 @@ spectral.density = function(X,Y=NULL,V=NULL,freq=NULL,q=NULL,weights=NULL,Ch=NUL
 
   thetas = freq
 
-	nbasisX = dim(X)[2]
-	nbasisY = dim(Y)[2]
-	n = dim(X)[1]
 
 	# if no precomputed covariance structure estimate it from the data
-	if (is.null(Ch))
-	  Ch = cov.structure(X,Y,q)
+	if (is.null(Ch)){
+	  nbasisX = dim(X)[2]
+    nbasisY = dim(Y)[2]
+    n = dim(X)[1]
+    Ch = cov.structure(X,Y,q)
+	}
+  else {
+    dims = dim(Ch$operators)[2:3]
+    nbasisX = dims[1]
+    nbasisY = dims[2]
+    n = dim(X)[1]
+  }
+
+  if (is.null(V))
+    V = diag(nbasisX)
 
   for (i in 1:(q*2+1))
     Ch$operators[i,,] = Ch$operators[i,,] %*% V

@@ -4,6 +4,7 @@ library(fda)
 data(pm10)
 
 library(devtools)
+# install(".")
 library(pcdpca)
 
 ## Static PCA ##

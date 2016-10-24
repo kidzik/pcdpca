@@ -15,8 +15,6 @@
 #' @seealso \code{\link{dpca.inverse}}, \code{\link{dpca.scores}}
 #' @export
 pcdpca = function(X,V=NULL,lags=-10:10,q=NULL,weights=NULL,freq=NULL,T=2){
-  if (T < 2)
-    stop("T must be greater or equal 2")
   if (!is.matrix(X))
     stop("X must be a matrix")
   if (!is.vector(lags) || any(!is.positiveint(abs(lags))))
@@ -27,20 +25,31 @@ pcdpca = function(X,V=NULL,lags=-10:10,q=NULL,weights=NULL,freq=NULL,T=2){
     q = 10
 
   pcdpcas = list()
-  for (d in 1:T){
-    Ch = pc.cov.structure(X,X,q,d-1,T)
-    #    Ch = cov.structure(X,X,q)
-    SD = spectral.density(X,q=q,weights=weights,freq=freq,Ch=Ch)
-    E = freqdom.eigen(SD)
-
-    nbasis = dim(E$vectors)[2]
-
-    XI = array(0,c(length(lags),nbasis,nbasis))
-
-    for (component in 1:nbasis)
-      XI[,component,] = t(exp(-(SD$freq %*% t(lags)) * 1i)) %*% E$vectors[,,component] / length(SD$freq)
-
-    pcdpcas[[d]] = timedom(Re(XI[length(lags):1,,]),lags)
+  CVStructure = c()
+  for (j1 in 0:(T-1)){
+    Row = c()
+    for (j2 in 0:(T-1)){
+      Ch = pc.cov.structure(X,X,q,j1,j2,T)
+      if (j2 == 0)
+        Row = Ch
+      else
+        Row = timedom.cbind(Row,Ch)
+    }
+    if (j1 == 0)
+      CVStructure = Row
+    else
+      CVStructure = timedom.rbind(CVStructure,Row)
   }
-  pcdpcas
+
+  SD = spectral.density(X,q=q,weights=weights,freq=freq,Ch=CVStructure)
+  E = freqdom.eigen(SD)
+
+  nbasis = dim(E$vectors)[2]
+
+  XI = array(0,c(length(lags),nbasis,nbasis))
+
+  for (component in 1:nbasis)
+    XI[,component,] = t(exp(-(SD$freq %*% t(lags)) * 1i)) %*% E$vectors[,,component] / length(SD$freq)
+
+  timedom(Re(XI[length(lags):1,,]),lags)
 }
