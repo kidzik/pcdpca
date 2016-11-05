@@ -6,23 +6,11 @@
 #' @export
 #' @examples
 #' pcdpca.scores(X)
-pcdpca.scores <- function(X, PC)
+pcdpca.scores <- function(X, XI)
 {
-  s = dim(PC$operators)[2]
-  n = nrow(X)
-  d = ncol(X)
-  T = s / d
-
-  dPC = timedom.diag(PC,T)
-  PC = dPC
-
-  ll = seq(1,21,by=2)
-  PC[[1]]$operators[ll,,] = dPC[[2]]$operators[ll,,]
-  PC[[2]]$operators[ll,,] = dPC[[1]]$operators[ll,,]
-
   Y.est = list()
   for (d in 1:T){
-    Y.est[[d]] = PC[[d]] %c% X  # applies the filter
+    Y.est[[d]] = XI[[d]] %c% X  # applies the filter
   }
   Y.res = Y.est[[1]]
 

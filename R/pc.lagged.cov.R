@@ -33,14 +33,14 @@ pc.lagged.cov = function(X,Y,lag,j1,j2,T)
 	# idxX = 1:(n-h)
 	# idxY = 1:(n-h)+h
 
-	idY = T*(0:n) + j2 + 1 + h
+	idY = T*(0:n) + j1 + 1 + h * T
 	idY = idY[idY <= n]
-#	print(idY)
+	# print(idY)
 	nr = length(idY)
 
-	idX = T*(0:n) + j1 + 1
+	idX = T*(0:n) + j2 + 1
 	idX = idX[1:nr]
-#	print(idX)
+	# print(idX)
 
 
   M = t(X[idX,]) %*% (Y[idY,])/(nr)
@@ -49,6 +49,6 @@ pc.lagged.cov = function(X,Y,lag,j1,j2,T)
 	  M = t(Y[idX,]) %*% (X[idY,])/(nr)
 	  M = t(M)
 	}
-	M
+	t(M)
 }
 

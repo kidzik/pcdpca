@@ -12,22 +12,16 @@
 #' Research report, 2016
 #' @export
 pcdpca.inverse = function(Y,XI){
-  s = dim(XI$operators)[2]
-  n = nrow(X)
-  d = ncol(X)
+  s = dim(XI[[1]]$operators)[2]
+  n = nrow(Y)
+  d = ncol(Y)
   T = s / d
-
-  dPC = timedom.diag(XI,T)
-  PC = dPC
-  ll = seq(1,21,by=2)
-  PC[[1]]$operators[ll,,] = dPC[[2]]$operators[ll,,]
-  PC[[2]]$operators[ll,,] = dPC[[1]]$operators[ll,,]
 
   X.est = list()
 
   Y.est = list()
   for (d in 1:T){
-    X.est[[d]] = t(rev(PC[[d]])) %c% Y
+    X.est[[d]] = t(rev(XI[[d]])) %c% Y
   }
   X.res = X.est[[1]]
 
