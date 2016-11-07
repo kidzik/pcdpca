@@ -40,19 +40,20 @@ pcdpca = function(X,V=NULL,lags=-10:10,q=NULL,weights=NULL,freq=NULL,T=2){
     else
       CVStructure = timedom.rbind(CVStructure,Row)
   }
-
   SD = spectral.density(X,q=q,weights=weights,freq=freq,Ch=CVStructure)
+  print(SD)
   E = freqdom.eigen(SD)
 
   nbasis = dim(E$vectors)[2]
 
   XI = array(0,c(length(lags),nbasis,nbasis))
 
+  # print(E)
   for (component in 1:nbasis)
     XI[,component,] = t(exp(-(SD$freq %*% t(lags)) * 1i)) %*% E$vectors[,,component] / length(SD$freq)
 
-  PC = timedom(Re(XI[length(lags):1,,]),lags)
-
+  PC = t(timedom(Re(XI[length(lags):1,,]),lags))
+  # print(PC)
   s = dim(PC$operators)[2]
   n = nrow(X)
   d = ncol(X)
@@ -79,13 +80,14 @@ pcdpca = function(X,V=NULL,lags=-10:10,q=NULL,weights=NULL,freq=NULL,T=2){
   # print(ll1)
   # print(seq( 1+ midlag - shift/2,midlag + shift/2,by=1))
 
-  XI[[1]][ll0,,] = PC$operators[seq(midlag - shift/2,midlag + shift/2,by=1), 1:2, 1:2]
-  XI[[1]][ll1,,] = PC$operators[seq(1 + midlag - shift/2,midlag + shift/2,by=1), 3:4, 1:2]
+  XI[[1]][ll0,,] = PC$operators[seq(midlag - shift/2, midlag + shift/2,by=1), 1:2, 1:2]
+  XI[[1]][ll1,,] = PC$operators[seq(1 + midlag - shift/2, midlag + shift/2,by=1), 3:4, 3:4]
 
-  XI[[2]][ll1,,] = PC$operators[seq(midlag - shift/2,midlag + shift/2 - 1,by=1), 1:2, 3:4]
-  XI[[2]][ll0,,] = PC$operators[seq(midlag - shift/2,midlag + shift/2,by=1), 3:4, 3:4]
+  XI[[2]][ll1,,] = PC$operators[seq(midlag - shift/2, midlag + shift/2 - 1,by=1), 1:2, 3:4]
+  XI[[2]][ll0,,] = PC$operators[seq(midlag - shift/2, midlag + shift/2,by=1), 3:4, 1:2]
 
-  XI[[1]] = timedom(Re(XI[[1]][1:length(lags),,]),PC$lags)
-  XI[[2]] = timedom(Re(XI[[2]][1:length(lags),,]),PC$lags)
+  XI[[1]] = t(timedom(Re(XI[[1]][1:length(lags),,]),PC$lags))
+  XI[[2]] = t(timedom(Re(XI[[2]][1:length(lags),,]),PC$lags))
   XI
+
 }

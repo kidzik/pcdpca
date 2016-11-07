@@ -20,6 +20,12 @@ pcdpca.inverse = function(Y,XI){
   X.est = list()
 
   Y.est = list()
+
+  ii0 = seq(2,4,by = 2)
+  otmp = XI[[1]]$operators
+  XI[[1]]$operators[ii0,,] = XI[[2]]$operators[ii0,,]
+  XI[[2]]$operators[ii0,,] = otmp[ii0,,]
+
   for (d in 1:T){
     X.est[[d]] = t(rev(XI[[d]])) %c% Y
   }
