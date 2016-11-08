@@ -12,31 +12,18 @@
 #' Research report, 2016
 #' @export
 pcdpca.inverse = function(Y,XI){
-  s = dim(XI[[1]]$operators)[2]
   n = nrow(Y)
   d = ncol(Y)
-  T = s / d
+  period = XI$period
 
-  X.est = list()
+  Y.st = pc2stat(Y, period = period)
 
-  Y.est = list()
+  # reorder columns
+  idx = c()
+  for (i in (d-1):0)
+    idx = c(idx,(1:period * d - i))
+  Y.st = Y.st[,idx]
 
-  ii0 = seq(2,4,by = 2)
-  otmp = XI[[1]]$operators
-  XI[[1]]$operators[ii0,,] = XI[[2]]$operators[ii0,,]
-  XI[[2]]$operators[ii0,,] = otmp[ii0,,]
-
-  for (d in 1:T){
-    X.est[[d]] = t(rev(XI[[d]])) %c% Y
-  }
-  X.res = X.est[[1]]
-
-  if (T>1){
-    for (d in 2:T){
-      idx = T*(0:n) + d
-      idx = idx[idx <= n]
-      X.res[idx,] = X.est[[d]][idx,]
-    }
-  }
-  X.res
+  X = t(rev(XI)) %c% Y.st
+  matrix(t(X),ncol=d,byrow = T)
 }

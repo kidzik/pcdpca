@@ -8,86 +8,22 @@
 #' @param q window for spectral density estimation as in \code{\link{spectral.density}}
 #' @param weights as in \code{\link{spectral.density}}
 #' @param freq frequency grid to estimate on as in \code{\link{spectral.density}}
+#' @param period period of the periodic time series
 #' @return principal components series
 #' @references Kidzinski, Kokoszka, Jouzdani
 #' Dynamic principal components of periodically correlated functional time series
 #' Research report, 2016
-#' @seealso \code{\link{dpca.inverse}}, \code{\link{dpca.scores}}
+#' @seealso \code{\link{pcdpca.inverse}}, \code{\link{pcdpca.scores}}
 #' @export
-pcdpca = function(X,V=NULL,lags=-10:10,q=NULL,weights=NULL,freq=NULL,T=2){
-  if (!is.matrix(X))
-    stop("X must be a matrix")
-  if (!is.vector(lags) || any(!is.positiveint(abs(lags))))
-    stop("lags must be a vector of integers")
-  if (is.null(V))
-    V = diag(dim(X)[2])
-  if (is.null(q))
-    q = 10
-
-  pcdpcas = list()
-  CVStructure = c()
-  for (j1 in 0:(T-1)){
-    Row = c()
-    for (j2 in 0:(T-1)){
-      Ch = pc.cov.structure(X,X,q,j1,j2,T)
-      if (j2 == 0)
-        Row = Ch
-      else
-        Row = timedom.cbind(Row,Ch)
-    }
-    if (j1 == 0)
-      CVStructure = Row
-    else
-      CVStructure = timedom.rbind(CVStructure,Row)
+pcdpca = function(X,V=NULL,lags=-10:10,q=NULL,weights=NULL,freq=NULL,period=NULL){
+  if (is.null(period))
+    stop("You have to specify the period.")
+  if (period <= 1)
+    stop("Period must be greater or equal 2. Otherwise use the freqdom package.")
+  if (!is.null(V)){
+    V = kronecker(diag(period),V)
   }
-  SD = spectral.density(X,q=q,weights=weights,freq=freq,Ch=CVStructure)
-  print(SD)
-  E = freqdom.eigen(SD)
-
-  nbasis = dim(E$vectors)[2]
-
-  XI = array(0,c(length(lags),nbasis,nbasis))
-
-  # print(E)
-  for (component in 1:nbasis)
-    XI[,component,] = t(exp(-(SD$freq %*% t(lags)) * 1i)) %*% E$vectors[,,component] / length(SD$freq)
-
-  PC = t(timedom(Re(XI[length(lags):1,,]),lags))
-  # print(PC)
-  s = dim(PC$operators)[2]
-  n = nrow(X)
-  d = ncol(X)
-  T = s / d
-
-  XI = list()
-  lags = PC$lags
-  nlags = length(lags)
-
-  XI[[1]] = array(0,c(nlags,T,T))
-  XI[[2]] = array(0,c(nlags,T,T))
-
-  ll0 = seq(1,nlags,by=2)
-  ll1 = seq(2,nlags-1,by=2)
-
-  #  print(dim(XI[[1]][ll0,,]))
-  #  print(dim(PC$operators[seq(6,16,by=1), 1:2, 1:2]))
-
-  shift = (nlags-1)/2
-  midlag = 1 + shift
-
-  # print(ll0)
-  # print(seq(midlag - shift/2,midlag + shift/2,by=1))
-  # print(ll1)
-  # print(seq( 1+ midlag - shift/2,midlag + shift/2,by=1))
-
-  XI[[1]][ll0,,] = PC$operators[seq(midlag - shift/2, midlag + shift/2,by=1), 1:2, 1:2]
-  XI[[1]][ll1,,] = PC$operators[seq(1 + midlag - shift/2, midlag + shift/2,by=1), 3:4, 3:4]
-
-  XI[[2]][ll1,,] = PC$operators[seq(midlag - shift/2, midlag + shift/2 - 1,by=1), 1:2, 3:4]
-  XI[[2]][ll0,,] = PC$operators[seq(midlag - shift/2, midlag + shift/2,by=1), 3:4, 1:2]
-
-  XI[[1]] = t(timedom(Re(XI[[1]][1:length(lags),,]),PC$lags))
-  XI[[2]] = t(timedom(Re(XI[[2]][1:length(lags),,]),PC$lags))
+  XI = dprcomp(pc2stat(X,period=period),V=V,lags=lags,q=q,weights=weights,freq=freq)
+  XI$period = period
   XI
-
 }
