@@ -1,6 +1,4 @@
 library("freqdom")
-library(devtools)
-install(".")
 library(pcdpca)
 
 d = 7

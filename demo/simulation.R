@@ -1,7 +1,5 @@
 library("freqdom")
-library(devtools)
 library(fda)
-install(".")
 library(pcdpca)
 
 ## Prepare the process

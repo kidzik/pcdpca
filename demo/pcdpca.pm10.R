@@ -1,11 +1,9 @@
 library(freqdom)
 library(MASS)
 library(fda)
-data(pm10)
-
-library(devtools)
-install(".")
 library(pcdpca)
+
+data(pm10)
 
 n = dim(X$coef)[2]
 
