@@ -2,20 +2,17 @@
 % Please edit documentation in R/pcdpca.scores.R
 \name{pcdpca.scores}
 \alias{pcdpca.scores}
-\title{Compute periodically correlated DPCA filters and scores}
+\title{Compute periodically correlated DPCA scores, given the filters XI}
 \usage{
-pcdpca.scores(X, PC)
+pcdpca.scores(X, XI)
 }
 \arguments{
 \item{X}{multivariate time series}
 
-\item{PC}{series of filters returned from pcdpca}
+\item{XI}{series of filters returned from pcdpca}
 }
 \description{
-Compute periodically correlated DPCA filters and scores
-}
-\examples{
-pcdpca.scores(X)
+Compute periodically correlated DPCA scores, given the filters XI
 }
 \keyword{pcdpca}
 

@@ -24,6 +24,6 @@ pcdpca.inverse = function(Y,XI){
     idx = c(idx,(1:period * d - i))
   Y.st = Y.st[,idx]
 
-  X = t(rev(XI)) %c% Y.st
+  X = freqdom::filter.process(Y.st,t(rev(XI)))
   matrix(t(X),ncol=d,byrow = T)
 }
