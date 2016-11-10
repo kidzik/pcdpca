@@ -1,22 +1,21 @@
 library("freqdom")
-library(fda)
 library(pcdpca)
 
+RES = c()
+
+for (run in 1:100){
 ## Prepare the process
 d = 7
 n = 100
-A = t(t(matrix(rnorm(d*n),ncol=d,nrow=n))*7:1)
-B = t(t(matrix(rnorm(d*n),ncol=d,nrow=n))*7:1)
-C = t(t(matrix(rnorm(d*n),ncol=d,nrow=n))*7:1)
+A = t(t(matrix(rnorm(d*n),ncol=d,nrow=n)))
+B = t(t(matrix(rnorm(d*n),ncol=d,nrow=n)))
+A = t(t(A) * exp(-(d:1)/d ))
+B = t(t(B) * exp(-(d:1)/d ))
 
 X = matrix(0,ncol=d,nrow=3*n)
 X[3*(1:n) - 1,] = A
-X[3*(1:n) - 2,] = A + B
-X[3*(1:n) ,] = 2*A - B + C
-
-basis = create.fourier.basis(nbasis=7)
-X.fd = fd(t(Re(X)),basis=basis)
-plot(X.fd)
+X[3*(1:n) - 2,] = B
+X[3*(1:n) ,] = 2*A - B
 
 ## Hold out some datapoints
 train = 1:(50*3)
@@ -40,14 +39,28 @@ Y.est.pc = pcdpca.scores(X, XI.est.pc)  # applies the filter
 Y.est.pc[,-1] = 0 # forces the use of only one component
 Xpcdpca.est = pcdpca.inverse(Y.est.pc, XI.est.pc)  # deconvolution
 
-## Results
-cat("NMSE PCA = ")
+# ## Results
+# cat("NMSE PCA = ")
 r0 = MSE(X[test,],Xpca.est[test,]) / MSE(X[test,],0)
-cat(r0)
-cat("\nNMSE DPCA = ")
+# cat(r0)
+# cat("\nNMSE DPCA = ")
 r1 = MSE(X[test,],Xdpca.est[test,]) / MSE(X[test,],0)
-cat(r1)
-cat("\nNMSE PCDPCA = ")
+# cat(r1)
+# cat("\nNMSE PCDPCA = ")
 r2 = MSE(X[test,],Xpcdpca.est[test,]) / MSE(X[test,],0)
-cat(r2)
-cat("\n")
+# cat(r2)
+# cat("\n")
+row = c(r0,r1,r2)
+print(row)
+RES = rbind(RES,row)
+}
+
+colnames(RES) = c("PCA","DPCA","PCDPCA")
+df = data.frame(RES,row.names = NULL)
+
+colMeans(df)
+summary(df)
+apply(df, 2, sd)
+
+t.test(df$DPCA - df$PCDPCA)
+boxplot(df)
