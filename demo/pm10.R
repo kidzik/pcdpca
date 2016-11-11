@@ -96,9 +96,9 @@ for (day in 1:length(days)){
 }
 
 # Figure 4: 3 elements of the first filter
-d = 1
+d = 2
 midpoint = 5
-days = c(3,4,1)
+days = c(4:7,1:3)
 for (day in 1:length(days)){
   for (i in (midpoint - d):(midpoint + d)){
     F = fd((XI.est$operators[i,1,1:15 + 15*(days[day]-1)]),X$basis)
@@ -116,3 +116,5 @@ for (day in 1:length(days)){
     abline(v=F$basis$rangeval[1]+1,lty=2)
   }
 }
+
+legend(-1.97, 0.6, c("1 - Monday","2 - Tuesday","3 - Wednesday","4 - Thursday","5 - Friday","6 - Saturday","7 - Sunday"), col = 1:7, lty=1, lwd=3)

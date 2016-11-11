@@ -24,7 +24,7 @@ X = t(matrix(t(Xd),d))
 
 ## Hold out some datapoints
 train = 1:(nrow(X)/2)
-test = (nrow(X)/2) : (nrow(X))
+test = (nrow(X)/2 + 1) : (nrow(X))
 
 ## Static PCA ##
 PR = prcomp(as.matrix(X[train,]))
@@ -56,12 +56,13 @@ print(row)
 RES = rbind(RES,row)
 }
 
-colnames(RES) = c("PCA","DPCA","PCDPCA")
-df = data.frame(RES,row.names = NULL)
+colnames(RES) = c("PCA","DPCA","PC-DPCA")
+df2 = data.frame(RES,row.names = NULL)
 
-colMeans(df)
-summary(df)
-apply(df, 2, sd)
+colMeans(df2)
+summary(df2)
+apply(df2, 2, sd)
 
-t.test(df$DPCA - df$PCDPCA)
-boxplot(df)
+t.test(df2$DPCA - df2$PC.DPCA)
+par(mfrow=c(1,1),ps = 12, cex = 1.8, cex.main = 1.8)
+boxplot(df2, main="Simulation study 2", ylab="Normalized mean squared error",ylim=c(0.25,0.9))

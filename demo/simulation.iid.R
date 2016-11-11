@@ -11,6 +11,7 @@ A = t(t(matrix(rnorm(d*n),ncol=d,nrow=n)))
 B = t(t(matrix(rnorm(d*n),ncol=d,nrow=n)))
 A = t(t(A) * exp(-(d:1)/d ))
 B = t(t(B) * exp(-(d:1)/d ))
+ntotal = 3*n
 
 X = matrix(0,ncol=d,nrow=3*n)
 X[3*(1:n) - 1,] = A
@@ -18,8 +19,8 @@ X[3*(1:n) - 2,] = B
 X[3*(1:n) ,] = 2*A - B
 
 ## Hold out some datapoints
-train = 1:(50*3)
-test = (50*3) : (3*n)
+train = 1:(ntotal/2)
+test = (1 + ntotal/2) : (ntotal)
 
 ## Static PCA ##
 PR = prcomp(as.matrix(X[train,]))
@@ -55,12 +56,13 @@ print(row)
 RES = rbind(RES,row)
 }
 
-colnames(RES) = c("PCA","DPCA","PCDPCA")
-df = data.frame(RES,row.names = NULL)
+colnames(RES) = c("PCA","DPCA","PC-DPCA")
+df1 = data.frame(RES,row.names = NULL)
 
-colMeans(df)
-summary(df)
-apply(df, 2, sd)
+colMeans(df1)
+summary(df1)
+apply(df1, 2, sd)
 
-t.test(df$DPCA - df$PCDPCA)
-boxplot(df)
+t.test(df1$DPCA - df1$PC.DPCA)
+par(mfrow=c(1,1),ps = 12, cex = 1.8, cex.main = 1.8)
+boxplot(df1, main="Simulation study 1", ylab="Normalized mean squared error",ylim=c(0.25,0.9))
