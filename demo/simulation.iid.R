@@ -9,8 +9,8 @@ d = 7
 n = 100
 A = t(t(matrix(rnorm(d*n),ncol=d,nrow=n)))
 B = t(t(matrix(rnorm(d*n),ncol=d,nrow=n)))
-A = t(t(A) * exp(-(d:1)/d ))
-B = t(t(B) * exp(-(d:1)/d ))
+A = t(t(A) * exp(-(1:d)/(d) ))
+B = t(t(B) * exp(-(1:d)/(d) ))
 ntotal = 3*n
 
 X = matrix(0,ncol=d,nrow=3*n)

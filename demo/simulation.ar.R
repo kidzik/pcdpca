@@ -3,8 +3,8 @@ library(pcdpca)
 
 ## Prepare the process
 period = 2
-d = 5
-n = 2000
+d = 7
+n = 1000
 
 RES = c()
 
@@ -14,8 +14,8 @@ for (i in 1:period){
   PsiTmp = c()
   for (j in 1:period){
     P = matrix(rnorm(d*d, sd = exp(-(1:d)/d) ),d)
-    P = P %*% t(P)
-    PsiTmp = cbind(PsiTmp,0.5 * P / norm(P)) * sign(runif(1,-1,1))
+#    P = P %*% t(P)
+    PsiTmp = cbind(PsiTmp,0.9 * P / norm(P))
   }
   Psi = rbind(Psi,PsiTmp)
 }
