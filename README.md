@@ -10,7 +10,7 @@ Two examples in `demo` directory:
 ## Installation
 
     library("devtools")
-    install_github("kidzik/pcdpca",auth_token = "cd1ae8a4f944e1f4f0c978f30b8cda230206439c")
+    install_github("kidzik/pcdpca"")
 
 ## Running a demo
 
