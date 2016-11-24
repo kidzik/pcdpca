@@ -10,7 +10,7 @@ Two examples in `demo` directory:
 ## Installation
 
     library("devtools")
-    install_github("kidzik/pcdpca"")
+    install_github("kidzik/pcdpca")
 
 ## Running a demo
 
@@ -22,8 +22,8 @@ Two examples in `demo` directory:
 
 Let `X` be a multivariate time series, a matrix with `n` observations and `d` covariates, periodic with `period = 2`. Then
 
-    XI.est = pcdpca(X,q=3,weights="Bartlett",freq=pi*(-150:150/150),period=2)  # finds the optimal filter
-    Y.est = pcdpca.scores(X, XI.est)  # applies the filter
-    Y.est[,-1] = 0 # forces the use of only one component
-    Xpcdpca.est = pcdpca.inverse(Y.est, XI.est)  # deconvolution
-    cat(MSE(X,Xpcdpca.est[ind,]) / MSE(X[ind,],0)) # variance explained
+    F = pcdpca(X, period=2)  # finds the optimal filter
+    Yhat = pcdpca.scores(X, F)  # applies the filter
+    Yhat[,-1] = 0 # forces the use of only one component
+    Xhat = pcdpca.inverse(Y.est, F)  # deconvolution
+    cat(sum((X-Xhat)^2) / sum(X^2) # variance explained
