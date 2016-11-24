@@ -22,8 +22,8 @@ Two examples in `demo` directory:
 
 Let `X` be a multivariate time series, a matrix with `n` observations and `d` covariates, periodic with `period = 2`. Then
 
-    F = pcdpca(X, period=2)  # finds the optimal filter
-    Yhat = pcdpca.scores(X, F)  # applies the filter
+    FF = pcdpca(X, period=2)  # finds the optimal filter
+    Yhat = pcdpca.scores(X, FF)  # applies the filter
     Yhat[,-1] = 0 # forces the use of only one component
-    Xhat = pcdpca.inverse(Y.est, F)  # deconvolution
-    cat(sum((X-Xhat)^2) / sum(X^2) # variance explained
+    Xhat = pcdpca.inverse(Yhat, FF)  # deconvolution
+    cat(sum((X-Xhat)^2) / sum(X^2)) # variance explained
