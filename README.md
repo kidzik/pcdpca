@@ -20,8 +20,7 @@ Two examples in `demo` directory:
 
 ## Usage
 
-Let `X` be a multivariate time series, a matrix with `n` observations and `d` covariates.
-Let `period` be the period. Then
+Let `X` be a multivariate time series, a matrix with `n` observations and `d` covariates, periodic with `period = 2`. Then
 
     XI.est = pcdpca(X,q=3,weights="Bartlett",freq=pi*(-150:150/150),period=2)  # finds the optimal filter
     Y.est = pcdpca.scores(X, XI.est)  # applies the filter
