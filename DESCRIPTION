@@ -1,5 +1,5 @@
 Package: pcdpca
-Title: Dynamic principal components of periodically correlated functional time series
+Title: Dynamic principal components for periodically correlated functional time series
 Version: 0.2
 Authors@R: c(person("Lukasz", "Kidzinski", email = "lukasz.kidzinski@stanford.edu", role = c("aut", "cre")), person("Neda", "Jouzdani", email = "neda.jouzdani@colostate.edu", role = c("aut")), person("Piotr", "Kokoszka", email = "piotr.kokoszka@colostate.edu", role = c("aut")))
 Description: Method extends mulitivariate dynamic principal components to periodically correlated multivariate time series.
