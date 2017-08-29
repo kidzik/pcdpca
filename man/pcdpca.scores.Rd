@@ -15,4 +15,3 @@ pcdpca.scores(X, XI)
 Compute periodically correlated DPCA scores, given the filters XI
 }
 \keyword{pcdpca}
-

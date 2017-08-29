@@ -4,23 +4,16 @@
 \alias{pcdpca}
 \title{Compute periodically correlacted DPCA filter coefficients}
 \usage{
-pcdpca(X, V = NULL, lags = -10:10, q = NULL, weights = NULL,
-  freq = NULL, period = NULL)
+pcdpca(X, period = NULL, q = 30, freq = (-1000:1000/1000) * pi)
 }
 \arguments{
 \item{X}{multivariate stationary time series}
 
-\item{V}{correlation structure between coefficients of vectors (default diagonal)}
-
-\item{lags}{requested filter coefficients}
+\item{period}{period of the periodic time series}
 
 \item{q}{window for spectral density estimation as in \code{\link{spectral.density}}}
 
-\item{weights}{as in \code{\link{spectral.density}}}
-
 \item{freq}{frequency grid to estimate on as in \code{\link{spectral.density}}}
-
-\item{period}{period of the periodic time series}
 }
 \value{
 principal components series
@@ -33,6 +26,9 @@ and use an inverse fourier transform to get coefficients of the optimal filters.
 ## Prepare some process
 library(fda)
 library(freqdom)
+
+MSE = function(X,Y=0){ sum((X-Y)**2) / nrow(X) }
+
 d = 7
 n = 100
 A = t(t(matrix(rnorm(d*n),ncol=d,nrow=n))*7:1)
@@ -59,16 +55,16 @@ Y1[,-1] = 0
 Xpca.est = Y1 \%*\% t(PR$rotation)
 
 ## Dynamic PCA ##
-XI.est = dprcomp(as.matrix(X[train,]),
-   q=3,lags=-2:2,weights="Bartlett",
-   freq=pi*(-150:150/150))  # finds the optimal filter
-Y.est = XI.est \%c\% X  # applies the filter
-Y.est[,-1] = 0 # forces the use of only one component
-Xdpca.est = t(rev(XI.est)) \%c\% Y.est    # deconvolution
+XI.est = dpca(as.matrix(X[train,]),
+   q=3,
+   freq=pi*(-150:150/150),
+   Ndpc=1)  # finds the optimal filter
+Y.est = freqdom::filter.process(X, XI.est$filters )
+Xdpca.est = freqdom::filter.process(Y.est, t(rev(XI.est$filters)) )    # deconvolution
 
 ## Periodically correlated PCA ##
 XI.est.pc = pcdpca(as.matrix(X[train,]),
-   q=3,lags=-2:2,weights="Bartlett",
+   q=3,
    freq=pi*(-150:150/150),period=3)  # finds the optimal filter
 Y.est.pc = pcdpca.scores(X, XI.est.pc)  # applies the filter
 Y.est.pc[,-1] = 0 # forces the use of only one component
@@ -94,4 +90,3 @@ Research report, 2016
 \seealso{
 \code{\link{pcdpca.inverse}}, \code{\link{pcdpca.scores}}
 }
-

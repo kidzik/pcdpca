@@ -27,4 +27,3 @@ Research report, 2016
 \seealso{
 \code{\link{pcdpca.scores}}, \code{\link{pcdpca}}
 }
-

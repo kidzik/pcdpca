@@ -10,15 +10,18 @@ if (!requireNamespace("MASS", quietly = TRUE)) {
 library(MASS)
 library(fda)
 library(freqdom)
+library(freqdom.fda)
 library(pcdpca)
 data(pm10)
 
+X = pm10
 n = dim(X$coef)[2]
 
 rev.freqdom = function(XI){
   XI$freq = rev(XI$freq)
   XI
 }
+MSE = function(X,Y=0){ sum((X-Y)**2) / nrow(X) }
 
 ## Static PCA ##
 PR = prcomp(t(X$coef))
@@ -27,13 +30,12 @@ Y1[,-1] = 0
 Xpca = Y1 %*% t(PR$rotation)
 
 ## Dynamic PCA ##
-XI.est = dprcomp(t(X$coef),q=13,weights="Bartlett",freq=pi*(-150:150/150))  # finds the optimal filter
-Y.est = XI.est %c% t(X$coef)  # applies the filter
-Y.est[,-1] = 0 # forces the use of only one component
-Xdpca.est = t(rev(XI.est)) %c% Y.est    # deconvolution
+XI.est = dpca(t(X$coef),q=4,freq=pi*(-150:150/150),Ndpc = 1)  # finds the optimal filter
+Y.est = XI.est$scores
+Xdpca.est = XI.est$Xhat
 
 ## Periodically correlated PCA ##
-XI.est = pcdpca(t(X$coef),q=4,lags=-3:3,weights="Bartlett",freq=pi*(-150:150/150),period=7)  # finds the optimal filter
+XI.est = pcdpca(t(X$coef),q=4,freq=pi*(-150:150/150),period=7)  # finds the optimal filter
 Y.pcest = pcdpca.scores(t(X$coef), XI.est)  # applies the filter
 Y.pcest[,-1] = 0 # forces the use of only one component
 Xpcdpca.est = pcdpca.inverse(Y.pcest, XI.est)  # deconvolution
@@ -79,7 +81,7 @@ midpoint = 4
 days = c(4:7,1:3)
 for (day in 1:length(days)){
   for (i in (midpoint - d):(midpoint + d)){
-    F = fd((XI.est$operators[i,1,1:15 + 15*(days[day]-1)]),X$basis)
+    F = fd((XI.est$operators[1:15 + 15*(days[day]-1),i,1]),X$basis)
     F$basis$rangeval = i - midpoint + c(0,1)
     if ((i == midpoint - d) && (day == 1)){
       xlim = c(-d,d+1)

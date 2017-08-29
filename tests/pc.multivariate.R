@@ -18,8 +18,9 @@ train = 1:(n/2)
 test = (1+n/2):n
 
 ## Periodically correlated PCA ##
-XI.est.pc = pcdpca(as.matrix(X[train,]),q=10,lags=-2:2,weights="Bartlett",freq=pi*(-150:150/150),period=3)  # finds the optimal filter
+XI.est.pc = pcdpca(as.matrix(X[train,]),q=10,freq=pi*(-150:150/150),period=3)  # finds the optimal filter
 Y.est.pc = pcdpca.scores(X, XI.est.pc)  # applies the filter
 Y.est.pc[,-1] = 0 # forces the use of only one component
 Xpcdpca.est = pcdpca.inverse(Y.est.pc, XI.est.pc)  # deconvolution
-r2 = MSE(X[test,],Xpcdpca.est[test,]) / MSE(X[test,],0)
+r2 = sum((X[test,] - Xpcdpca.est[test,])**2 ) / sum( (X[test,])**2 )
+r2
