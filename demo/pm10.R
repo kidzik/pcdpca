@@ -14,7 +14,7 @@ library(freqdom.fda)
 library(pcdpca)
 data(pm10)
 
-X = pm10
+X = center.fd(pm10)
 n = dim(X$coef)[2]
 
 rev.freqdom = function(XI){
@@ -35,7 +35,7 @@ Y.est = XI.est$scores
 Xdpca.est = XI.est$Xhat
 
 ## Periodically correlated PCA ##
-XI.est = pcdpca(t(X$coef),q=4,freq=pi*(-150:150/150),period=7)  # finds the optimal filter
+XI.est = pcdpca(t(X$coef),q=3,freq=pi*(-150:150/150),period=7)  # finds the optimal filter
 Y.pcest = pcdpca.scores(t(X$coef), XI.est)  # applies the filter
 Y.pcest[,-1] = 0 # forces the use of only one component
 Xpcdpca.est = pcdpca.inverse(Y.pcest, XI.est)  # deconvolution
@@ -81,7 +81,7 @@ midpoint = 4
 days = c(4:7,1:3)
 for (day in 1:length(days)){
   for (i in (midpoint - d):(midpoint + d)){
-    F = fd((XI.est$operators[1:15 + 15*(days[day]-1),i,1]),X$basis)
+    F = fd((XI.est$operators[1,1:15 + 15*(days[day]-1),i]),X$basis)
     F$basis$rangeval = i - midpoint + c(0,1)
     if ((i == midpoint - d) && (day == 1)){
       xlim = c(-d,d+1)

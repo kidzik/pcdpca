@@ -1,8 +1,13 @@
 Package: pcdpca
 Title: Dynamic Principal Components for Periodically Correlated Functional Time Series
-Version: 0.3
+Version: 0.4
 Authors@R: c(person("Lukasz", "Kidzinski", email = "lukasz.kidzinski@stanford.edu", role = c("aut", "cre")), person("Neda", "Jouzdani", email = "neda.jouzdani@colostate.edu", role = c("aut")), person("Piotr", "Kokoszka", email = "piotr.kokoszka@colostate.edu", role = c("aut")))
-Description: Method extends multivariate dynamic principal components to periodically correlated multivariate time series.
+Description: Method extends multivariate and functional dynamic principal components
+    to periodically correlated multivariate time series. This package allows you to
+    compute true dynamic principal components in the presence of periodicity. 
+    We follow implementation guidelines as described in Kidzinski, Kokoszka and
+    Jouzdani (2017), in Principal component analysis of periodically correlated
+    functional time series <arXiv:1612.00040>.
 Depends: R (>= 3.3.1)
 Imports: freqdom, fda
 License: GPL-3

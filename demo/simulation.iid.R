@@ -29,13 +29,12 @@ Y1[,-1] = 0
 Xpca.est = Y1 %*% t(PR$rotation)
 
 ## Dynamic PCA ##
-XI.est = dprcomp(as.matrix(X[train,]),q=3,lags=-2:2,weights="Bartlett",freq=pi*(-150:150/150))  # finds the optimal filter
-Y.est = XI.est %c% X  # applies the filter
-Y.est[,-1] = 0 # forces the use of only one component
-Xdpca.est = t(rev(XI.est)) %c% Y.est    # deconvolution
+XI.est = dpca(as.matrix(X[train,]),q=sqn,freq=pi*(-150:150/150),Ndpc = 1)  # finds the optimal filter
+Y.est = freqdom::filter.process(X, XI.est$filters )
+Xdpca.est = freqdom::filter.process(Y.est, t(rev(XI.est$filters)) )    # deconvolution
 
 ## Periodically correlated PCA ##
-XI.est.pc = pcdpca(as.matrix(X[train,]),q=3,lags=-2:2,weights="Bartlett",freq=pi*(-150:150/150),period=3)  # finds the optimal filter
+XI.est.pc = pcdpca(as.matrix(X[train,]),q=sqn,freq=pi*(-150:150/150),period=period)  # finds the optimal filter
 Y.est.pc = pcdpca.scores(X, XI.est.pc)  # applies the filter
 Y.est.pc[,-1] = 0 # forces the use of only one component
 Xpcdpca.est = pcdpca.inverse(Y.est.pc, XI.est.pc)  # deconvolution

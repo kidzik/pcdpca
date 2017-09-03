@@ -1,3 +1,6 @@
+In this update we update functions for campatibility with the new interface of
+the freqdom package https://cran.r-project.org/web/packages/freqdom/index.html
+
 ## Test environments
 * local OS X install, R 3.4.1
 * ubuntu 12.04 (on travis-ci), R 3.4.1
@@ -7,9 +10,6 @@
 
 0 errors | 0 warnings | 1 note
 
-* This is a new release.
-
 ## Reverse dependencies
 
-Updated for compatibility with the new interface of freqdom package:
-https://cran.r-project.org/web/packages/freqdom/index.html
+There are no reverse dependencies at the moment
