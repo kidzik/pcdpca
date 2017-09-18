@@ -71,13 +71,18 @@
 #' cat(r2)
 #' cat("\n")
 #' @export
-pcdpca = function(X,period=NULL,q=30,freq=(-1000:1000/1000) * pi){
+pcdpca = function(X,period=NULL,q=max(1,floor(dim(X)[1]^(1/3))),L=30,freq=(-1000:1000/1000) * pi){
   if (is.null(period))
     stop("You have to specify the period.")
   if (period <= 1)
     stop("Period must be greater or equal 2. Otherwise use the freqdom package.")
-  dpc = freqdom::dpca(pc2stat(X,period=period),q=q,freq=freq)
-  XI = dpc$filters
-  XI$period = period
-  XI
+#  dpc = freqdom::dpca(pc2stat(X,period=period),q=q,freq=freq)
+  if (!is.matrix(X))
+    stop("X must be a matrix")
+  dpc = list()
+  dpc$spec.density = spectral.density(pc2stat(X,period=period), freq = freq, q = q)
+
+  res = dpca.filters(dpc$spec.density, q = L, Ndpc = ncol(X) * period)
+  res$period = period
+  res
 }

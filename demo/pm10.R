@@ -1,3 +1,16 @@
+my.dpca = function (X, q=floor(ncol(X)^{1/3}), L = 30, freq = (-1000:1000/1000) * pi, Ndpc = dim(X)[2])
+{
+  if (!is.matrix(X))
+    stop("X must be a matrix")
+  res = list()
+  res$spec.density = freqdom::spectral.density(X, freq = freq, q = q)
+  res$filters = freqdom::dpca.filters(res$spec.density, q = L, Ndpc = Ndpc)
+  res$scores = dpca.scores(X, res$filters)
+  res$var = dpca.var(res$spec.density)
+  res$Xhat = dpca.KLexpansion(X, res$filters)
+  res
+}
+
 if (!requireNamespace("fda", quietly = TRUE)) {
   stop("fda package is needed for this demo to work. Please install it.",
        call. = FALSE)
@@ -30,12 +43,12 @@ Y1[,-1] = 0
 Xpca = Y1 %*% t(PR$rotation)
 
 ## Dynamic PCA ##
-XI.est = dpca(t(X$coef),q=4,freq=pi*(-150:150/150),Ndpc = 1)  # finds the optimal filter
+XI.est = my.dpca(t(X$coef),q=13,L=21,freq=pi*(-150:150/150),Ndpc = 1)  # finds the optimal filter
 Y.est = XI.est$scores
 Xdpca.est = XI.est$Xhat
 
 ## Periodically correlated PCA ##
-XI.est = pcdpca(t(X$coef),q=3,freq=pi*(-150:150/150),period=7)  # finds the optimal filter
+XI.est = pcdpca(t(X$coef),q=4,L=3,freq=pi*(-150:150/150),period=7)  # finds the optimal filter
 Y.pcest = pcdpca.scores(t(X$coef), XI.est)  # applies the filter
 Y.pcest[,-1] = 0 # forces the use of only one component
 Xpcdpca.est = pcdpca.inverse(Y.pcest, XI.est)  # deconvolution
@@ -57,25 +70,26 @@ cat("\n")
 
 # Figure 1: 10 observations reconstructed from the first component
 ind = 20 + 1:10
-par(mfrow=c(2,2),ps = 12, cex = 1, cex.main = 1)
-plot(X[ind],ylim=c(-5,3),xlab="Intraday time", ylab="Sqrt(PM10)",lwd=2)
+par(mfrow=c(2,2),ps = 12, cex = 1.3, cex.main = 1)
+plot(X[ind],ylim=c(-5,4),xlab="Intraday time", ylab="Sqrt(PM10)",lwd=3)
 title("Original curves")
-plot(Xpca.fd[ind],ylim=c(-5,3),xlab="Intraday time", ylab="Sqrt(PM10)",lwd=2)
+plot(Xpca.fd[ind],ylim=c(-5,4),xlab="Intraday time", ylab="Sqrt(PM10)",lwd=3)
 title("PCA curves")
-plot(Xdpca.est.fd[ind],ylim=c(-5,3),xlab="Intraday time", ylab="Sqrt(PM10)",lwd=2)
+plot(Xdpca.est.fd[ind],ylim=c(-5,4),xlab="Intraday time", ylab="Sqrt(PM10)",lwd=3)
 title("DPCA curves")
-plot(Xpcdpca.est.fd[ind],ylim=c(-5,3),xlab="Intraday time", ylab="Sqrt(PM10)",lwd=2)
+plot(Xpcdpca.est.fd[ind],ylim=c(-5,4),xlab="Intraday time", ylab="Sqrt(PM10)",lwd=3)
 title("PC-DPCA curves")
 par(mfrow=c(1,1))
 
 # Figure 2: Scores: static, dynamic and the differences
-par(mfrow=c(1,3),ps = 12, cex = 1, cex.main = 1)
+par(mfrow=c(1,3),ps = 12, cex = 1.5, cex.main = 1)
 plot(Re(Y.est[,1]),t='l', ylab="1st DFPC scores", xlab="Time [days]",ylim=c(-7,7))
 plot(Re(Y.pcest[,1]),t='l', ylab="1st PC-DFPC scores", xlab="Time [days]",ylim=c(-7,7))
 plot(Re(Y.pcest[,1]-Y.est[,1]),t='l', ylab="Differences", xlab="Time [days]",ylim=c(-7,7))
 par(mfrow=c(1,1))
 
 # Figure 3: 3 elements of the first filter
+par(cex=1.5)
 d = 2
 midpoint = 4
 days = c(4:7,1:3)
